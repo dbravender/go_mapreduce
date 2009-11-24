@@ -1,8 +1,8 @@
 package main
 
 import (
-    "fmt";
     "mapreduce";
+    "fmt";
 )
 
 func main() {
@@ -13,19 +13,23 @@ func main() {
         }
         close(input_channel);
     }();
-    fmt.Println(
-        mapreduce.MapReduce(
-            func(x interface{}, output chan interface{}) {
-                output <- x.(int) * x.(int);
-            },
-            func(input chan interface{}, output chan interface{}) {
-                total := 0;
-                for item := range input {
-                    total += item.(int);
-                }
-                output <- total;
-            }, 
-            input_channel
-        )
+    result := mapreduce.MapReduce(
+        func(x interface{}, output chan interface{}) {
+            output <- x.(int) * x.(int);
+        },
+        func(input chan interface{}, output chan interface{}) {
+            total := 0;
+            for item := range input {
+                total += item.(int);
+            }
+            output <- total;
+        }, 
+        input_channel
     );
+
+    if result.(int) != 30 {
+        fmt.Println("Unexpected MapReduce result");
+    } else {
+        fmt.Println("OK");
+    }
 }
