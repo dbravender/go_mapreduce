@@ -4,7 +4,7 @@ import (
     "os";
     "fmt";
     "regexp";
-    "io";
+    "file_iter";
     "mapreduce";
 )
 
@@ -34,15 +34,15 @@ func _find_files(dirname string, output chan interface{}) {
 func wordcount(filename interface{}, output chan interface{}) {
     results := map[string]int{};
     wordsRE := regexp.MustCompile(`[A-Za-z0-9_]*`);
-    contents, _ := io.ReadFile(filename.(string));
-    matches := wordsRE.AllMatchesString(string(contents), 0);
-    for i := 0; i < len(matches); i++ {
-        match := matches[i];
-        previous_count, exists := results[match];
-        if !exists {
-            results[match] = 1;
-        } else {
-            results[match] = previous_count + 1;
+    for line := range file_iter.EachLine(filename.(string)) {
+        matches := wordsRE.AllMatchesString(line, 0);
+        for _, match := range matches {
+            previous_count, exists := results[match];
+            if !exists {
+                results[match] = 1;
+            } else {
+                results[match] = previous_count + 1;
+            }
         }
     }
     output <- results;
