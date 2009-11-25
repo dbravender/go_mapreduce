@@ -6,22 +6,20 @@ func MapReduce(mapper func(interface{}, chan interface{}),
 {
     reduce_input     := make(chan interface{});
     reduce_output    := make(chan interface{});
-    worker_output    := make(chan interface{});
-    worker_processes := 0;
+    worker_output    := make(chan chan interface{});
     go reducer(reduce_input, reduce_output);
     go func() {
         for item := range input {
-            go mapper(item, worker_output);
-            worker_processes += 1;
+            my_chan := make(chan interface{});
+            go mapper(item, my_chan);
+            worker_output <- my_chan;
         }
+        close(worker_output);
     }();
-    for item := range worker_output {
-        worker_processes -= 1;
-        reduce_input <- item;
-        if worker_processes <= 0 {
-            close(reduce_input);
-            break;
-        }
+    for new_chan := range worker_output {
+        worker_chan := <- new_chan;
+        reduce_input <- worker_chan;
     }
+    close(reduce_input);
     return <- reduce_output;
 }
