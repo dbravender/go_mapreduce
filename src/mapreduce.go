@@ -9,10 +9,12 @@ func MapReduce(mapper func(interface{}, chan interface{}),
     worker_output    := make(chan interface{});
     worker_processes := 0;
     go reducer(reduce_input, reduce_output);
-    for item := range input {
-        go mapper(item, worker_output);
-        worker_processes += 1;
-    }
+    go func() {
+        for item := range input {
+            go mapper(item, worker_output);
+            worker_processes += 1;
+        }
+    }();
     for item := range worker_output {
         worker_processes -= 1;
         reduce_input <- item;
