@@ -2,16 +2,16 @@ package mapreduce
 
 func MapReduce(mapper func(interface{}, chan interface{}),
                reducer func(chan interface{}, chan interface{}),
-               input chan interface{}) interface{} 
+               input chan interface{},
+               pool_size int) interface{} 
 {
-    reduce_input     := make(chan interface{}, 100);
+    reduce_input     := make(chan interface{});
     reduce_output    := make(chan interface{});
-    worker_output    := make(chan chan interface{}, 100);
+    worker_output    := make(chan chan interface{}, pool_size);
     go reducer(reduce_input, reduce_output);
     go func() {
-        for new_chan := range worker_output {
-            worker_chan := <- new_chan;
-            reduce_input <- worker_chan;
+        for worker_chan := range worker_output {
+            reduce_input <- <- worker_chan;
         }
         close(reduce_input);
     }();

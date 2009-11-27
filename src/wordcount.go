@@ -52,11 +52,11 @@ func reducer(input chan interface{}, output chan interface{}) {
     results := map[string]int{};
     for new_matches := range input {
         for key, value := range new_matches.(map[string]int) {
-            _, exists := results[key];
+            previous_count, exists := results[key];
             if !exists {
                 results[key] = value;
             } else {
-                results[key] = results[key] + value;
+                results[key] = previous_count + value;
             }
         }
     }
@@ -64,5 +64,5 @@ func reducer(input chan interface{}, output chan interface{}) {
 }
 
 func main() {
-    fmt.Print(mapreduce.MapReduce(wordcount, reducer,  find_files(".")));
+    fmt.Print(mapreduce.MapReduce(wordcount, reducer,  find_files("."), 10));
 }
