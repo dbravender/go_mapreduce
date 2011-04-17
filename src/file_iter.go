@@ -1,27 +1,27 @@
 package file_iter
 
 import (
-    "os";
-    "bufio";
+    "os"
+    "bufio"
 )
 
 func EachLine(filename string) chan string {
-    output := make(chan string);
+    output := make(chan string)
     go func() {
-        file, err := os.Open(filename, os.O_RDONLY, 0);
+        file, err := os.Open(filename, os.O_RDONLY, 0)
         if err != nil {
-            return;
+            return
         }
-        defer file.Close();
-        reader := bufio.NewReader(file);
+        defer file.Close()
+        reader := bufio.NewReader(file)
         for {
-            line, err := reader.ReadString('\n');
-            output <- line;
+            line, err := reader.ReadString('\n')
+            output <- line
             if err == os.EOF {
-                break;
+                break
             }
         }
-        close(output);
-    }();
-    return output;
+        close(output)
+    }()
+    return output
 }

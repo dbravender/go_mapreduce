@@ -3,8 +3,7 @@ package mapreduce
 func MapReduce(mapper func(interface{}, chan interface{}),
                reducer func(chan interface{}, chan interface{}),
                input chan interface{},
-               pool_size int) interface{} 
-{
+               pool_size int) interface{} {
     reduce_input     := make(chan interface{});
     reduce_output    := make(chan interface{});
     worker_output    := make(chan chan interface{}, pool_size);
