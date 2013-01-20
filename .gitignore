@@ -1,5 +1,2 @@
-*.swp
-*.8
-*.6
-main
-wordcount
+/bin
+/pkg
