@@ -4,6 +4,8 @@ A simple MapReduce implementation in Go using channels and generics.
 
 This is a learning project for understanding Go channels and MapReduce basics. Not intended for production use.
 
+This code was written within a year of Go's release so the initial commits have semicolons but I have kept it up-to-date in terms of compatibility and style.
+
 ## Installation
 
 ```bash
